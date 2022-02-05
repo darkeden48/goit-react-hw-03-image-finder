@@ -7,8 +7,14 @@ class Searchbar extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.onSubmit(this.state);
+    this.props.onSubmit(this.state.input);
     this.reset();
+  };
+  handleChange = (event) => {
+    // console.log(this.state.input)
+    this.setState({
+      input: event.currentTarget.value,
+    });
   };
   reset = (e) => {
     this.setState({
@@ -27,6 +33,9 @@ class Searchbar extends Component {
           <input
             class="input"
             type="text"
+            name="input"
+            value={this.state.input}
+            onChange={this.handleChange}
             autocomplete="off"
             autofocus
             placeholder="Search images and photos"
