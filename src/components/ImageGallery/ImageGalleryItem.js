@@ -1,33 +1,22 @@
 import { Component } from "react";
-import Loader from "../Loader/Loader";
+import I from "./ImageGallery.module.css";
 
-export default class ImageGalleryItem extends Component {
-  state = {
-    image: null,
-    loader: false,
-  };
-  componentDidUpdate(prevProps, prevState) {
-    const imagePsiho = this.props.input;
-    const prev = prevProps.input;
-    if (prev !== imagePsiho) {
-      this.setState({ loader: true });
-      fetch(
-        `https://pixabay.com/api/?q=${imagePsiho}&page=1&key=24335530-1fa5676597020c031a07a1cad&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then((response) => response.json())
-        .then((image) => this.setState({ image }))
-        .finally(() => this.setState({ loader: false }));
-      this.setState({ image: null });
-      console.log(this.state.image);
-    }
+export default function ImageGalleryItem({ image }) {
+  //  function choco (e) {
+  //     this.props.onClickElem(e);
+  // // console.log(e.target)
+  // }
+  if (image.total === 0) {
+    return <h1>Картинок по такому запросу не найдено</h1>;
   }
-  render() {
-    return (
-      <div>
-        {this.props.input && <p>{this.props.input}</p>}
-        {this.state.loader && <Loader />}
-        {this.state.image && <div>{this.state.image}</div>}
-      </div>
-    );
-  }
+
+  return (
+    <ul className={I.list}>
+      {image.hits.map((el) => (
+        <li id={el.id}>
+          <img src={el.webformatURL} alt={el.tags} width="250" height="250" />
+        </li>
+      ))}
+    </ul>
+  );
 }
