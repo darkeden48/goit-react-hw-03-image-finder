@@ -2,50 +2,74 @@ import { Component } from "react";
 // import Loader from "../Loader/Loader";
 import ImageGalleryItem from "./ImageGalleryItem";
 import Loader from "../Loader/Loader";
-import imageApi from "../../services/image-api";
+import Button from "../Button/Button";
+import { fetchImage } from "../../services/image-api";
+import I from "./ImageGallery.module.css";
 
 export default class ImageGallery extends Component {
   state = {
-    image: null,
+    image: [],
     status: "idle",
     error: null,
-    input: null,
     page: 1,
-    button: null,
-    gallery: [],
+    showLoadMoreBtn: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
     const nextName = this.props.input;
     const prevName = prevProps.input;
-    const gallery = prevState.image;
-    const { input, page, image, button } = this.state;
 
     if (nextName !== prevName) {
-      this.setState({ status: "pending" });
-      this.searchImage();
+      this.setState({ image: [], page: 1 });
+    }
+    if (prevName !== nextName || prevState.page !== this.state.page) {
+      this.setState({
+        // status: "pending",
+        showLoadMoreBtn: false,
+      });
+
+      const { page } = this.state;
+
+      fetchImage(this.props.input, page)
+        .then((data) => {
+          if (data.hits.length === 0) {
+            this.setState({ showLoadMoreBtn: false, status: "rejected" });
+            return;
+          }
+
+          this.setState({
+            image:
+              this.state.page === 1
+                ? data.hits
+                : [...prevState.image, ...data.hits],
+            showLoadMoreBtn: true,
+            status: "resolved",
+          });
+
+          if (prevState.page !== page) {
+            window.scrollTo({
+              top: document.documentElement.scrollHeight,
+              behavior: "smooth",
+            });
+          }
+
+          if (data.hits.length < 15) {
+            this.setState({ showLoadMoreBtn: false });
+          }
+          return;
+        })
+
+        .catch((error) => this.setState({ error, status: "rejected" }));
     }
   }
-
-  searchImage = () => {
-    const { input, page, image, gallery } = this.state;
-    imageApi
-      .fetchImage(this.props.input, page)
-      .then((image) =>
-        this.setState({ image, status: "resolved", page: this.state.page })
-      )
-      .catch((error) => this.setState({ error, status: "rejected" }));
-  };
-
-  onClickElem = (page) => {
-    // this.props.page(this.state.page);
-
-    this.searchImage();
-    this.setState({ page: this.state.page + 1 });
+  onLoadMoreClick = () => {
+    this.setState((prevState) => ({
+      page: prevState.page + 1,
+    }));
   };
 
   render() {
-    const { image, error, status, page } = this.state;
+    const { image, status, showLoadMoreBtn } = this.state;
 
     if (status === "idle") {
       return <p>Введите название картинки</p>;
@@ -56,16 +80,25 @@ export default class ImageGallery extends Component {
     if (status === "resolved") {
       return (
         <div>
-          <ImageGalleryItem image={image} />
-
-          <button type="button" onClick={this.onClickElem}>
-            hh
-          </button>
+          {image && (
+            <ul className={I.list}>
+              {image.map((el) => (
+                <ImageGalleryItem
+                  key={el.id}
+                  webformatURL={el.webformatURL}
+                  tags={el.tags}
+                  largeImageURL={el.largeImageURL}
+                  onSelect={this.props.onOpen}
+                />
+              ))}
+            </ul>
+          )}
+          {showLoadMoreBtn && <Button onClick={this.onLoadMoreClick} />}
         </div>
       );
     }
     if (status === "rejected") {
-      return <h1>{error}</h1>;
+      return <h1>Картинок по запросу '{this.props.input}' не найдено</h1>;
     }
   }
 }

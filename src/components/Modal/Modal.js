@@ -20,7 +20,7 @@ export default class Modal extends Component {
   };
   handleBackdropClick = (e) => {
     if (e.currentTarget === e.target) {
-      //   this.props.closeModal();
+      this.props.closeModal();
       console.log(e.currentTarget);
       console.log(e.target);
     }
@@ -30,7 +30,7 @@ export default class Modal extends Component {
     return createPortal(
       <div class={m.overlay} onClick={this.handleBackdropClick}>
         <div class="modal">
-          {imageApi.fetchImage.value}
+          {this.props.children}
           <img src="" alt="" />
         </div>
       </div>,
