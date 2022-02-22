@@ -1,10 +1,10 @@
 import { Component } from "react";
-// import Loader from "../Loader/Loader";
 import ImageGalleryItem from "./ImageGalleryItem";
 import Loader from "../Loader/Loader";
 import Button from "../Button/Button";
 import { fetchImage } from "../../services/image-api";
 import I from "./ImageGallery.module.css";
+import PropTypes from "prop-types";
 
 export default class ImageGallery extends Component {
   state = {
@@ -102,3 +102,10 @@ export default class ImageGallery extends Component {
     }
   }
 }
+ImageGallery.propTypes = {
+  image: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+    })
+  ),
+};

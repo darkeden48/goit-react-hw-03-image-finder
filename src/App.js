@@ -7,10 +7,7 @@ import Modal from "./components/Modal/Modal";
 class App extends Component {
   state = {
     input: "",
-    image: null,
     showModal: false,
-    page: 1,
-    error: null,
     modalImage: null,
     modalAlt: null,
   };

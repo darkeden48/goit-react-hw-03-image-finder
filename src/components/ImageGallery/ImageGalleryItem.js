@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Component } from "react";
 
 export default function ImageGalleryItem({
@@ -26,3 +27,9 @@ export default function ImageGalleryItem({
     </li>
   );
 }
+ImageGalleryItem.propTypes = {
+  webformatURL: PropTypes.string,
+  tags: PropTypes.string,
+  largeImageURL: PropTypes.string,
+  onClick: PropTypes.func,
+};
