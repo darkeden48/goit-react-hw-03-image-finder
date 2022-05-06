@@ -7,6 +7,9 @@ class Searchbar extends Component {
   };
 
   handleSubmit = (e) => {
+    if (this.state.input === " ") {
+      return;
+    }
     e.preventDefault();
     this.props.onSubmit(this.state.input);
     this.reset();
