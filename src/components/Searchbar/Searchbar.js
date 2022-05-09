@@ -7,17 +7,17 @@ class Searchbar extends Component {
   };
 
   handleSubmit = (e) => {
-    if (this.state.input.trim() === "") {
-      return;
-    }
     e.preventDefault();
-    this.props.onSubmit(this.state.input);
-    this.reset();
+    const { input } = this.state;
+    if (input) {
+      this.props.onSubmit(input);
+      this.reset();
+    }
   };
 
   handleChange = (event) => {
     this.setState({
-      input: event.currentTarget.value,
+      input: event.currentTarget.value.trim(),
     });
   };
 
